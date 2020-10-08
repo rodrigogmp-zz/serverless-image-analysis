@@ -2,6 +2,7 @@
 
 const AWS = require("aws-sdk"); // eslint-disable-line import/no-extraneous-dependencies
 
+const fs = require("fs");
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const s3 = new AWS.S3();
@@ -12,14 +13,12 @@ module.exports.extractMetadata = (event) => {
     event.Records[0].s3.object.key.replace(/\+/g, " ")
   );
 
-  const file_params = {
+  const fileParams = {
     Bucket: bucket,
     Key: key,
   };
 
-  console.log("pathParameters " + event.pathParameters);
-
-  s3.getObject(file_params, function (err, data) {
+  s3.getObject(fileParams, function (err, data) {
     if (err) {
       console.log(err);
     } else {
@@ -33,9 +32,9 @@ module.exports.extractMetadata = (event) => {
 
       dynamoDb.put(object, function (err, data) {
         if (err) {
-          console.log("Error", err);
+          console.log(err);
         } else {
-          console.log("Success", data);
+          console.log(data);
         }
       });
     }
@@ -43,46 +42,49 @@ module.exports.extractMetadata = (event) => {
 };
 
 module.exports.getMetadata = async (event, context, callback) => {
-  let params = {
+  let queryDbParams = {
     TableName: "serverless-defiance-dev",
     Key: {
       s3objectkey: `uploads/${event.pathParameters.s3objectkey}`,
     },
   };
 
-  function getImageFromDb() {
-    return new Promise((resolve) => {
-      dynamoDb.get(params, function (err, data) {
-        if (err) console.log(err);
-        else {
-          resolve(data.Item);
-        }
-      });
+  let imageAttributes = await getImageFromDb(queryDbParams);
+
+  let response = buildResponse(imageAttributes);
+  callback(null, response);
+};
+
+function getImageFromDb(params) {
+  return new Promise((resolve) => {
+    dynamoDb.get(params, function (err, data) {
+      if (err) console.log(err);
+      else {
+        resolve(data.Item);
+      }
     });
-  }
+  });
+}
 
-  let imageAttributes = await getImageFromDb();
-
+function buildResponse(imageAttributes) {
   if (imageAttributes) {
     let responseBody = {
       s3objectkey: imageAttributes.s3objectkey,
       fileLenght: imageAttributes.fileLenght,
     };
 
-    let response = {
+    return {
       statusCode: 200,
       body: JSON.stringify(responseBody),
     };
-    callback(null, response);
   } else {
     let responseBody = {
       message: "Image not found",
     };
 
-    let response = {
+    return {
       statusCode: 404,
       body: JSON.stringify(responseBody),
     };
-    callback(null, response);
   }
-};
+}
