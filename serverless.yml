@@ -20,6 +20,22 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: /
+          method: get
+  getMetadata:
+    handler: handler.getMetadata
+    description:
+    memorySize: 128
+    timeout: 30
+    events:
+      - http:
+          path: images/{s3objectkey}
+          method: get
+          cors: true
   extractMetadata:
     handler: handler.extractMetadata
     description:
@@ -32,16 +48,6 @@ functions:
           rules:
             - prefix: uploads/
             - suffix: .jpg
-  getMetadata:
-    handler: handler.getMetadata
-    description:
-    memorySize: 128
-    timeout: 30
-    events:
-      - http:
-          path: images/{s3objectkey}
-          method: get
-          cors: true
 
 resources:
   Resources:
