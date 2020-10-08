@@ -42,48 +42,47 @@ module.exports.extractMetadata = (event) => {
   });
 };
 
-module.exports.getMetadata = (event, context, callback) => {
-  console.log("entrou");
-  // console.log("entrou" + s3objectkey);
-  // console.log("event" + event);
-  // console.log("context" + context);
-  // console.log("callback" + callback);
-  // console.log("request" + request);
-  // console.log("params" + params);
-  // try {
-  //   return {
-  //     statusCode: 200,
-  //     body: JSON.stringify({
-  //       message: "success",
-  //     }),
-  //   };
-  // } catch (err) {
-  //   console.log("error", err);
-  // }
-
-  var responseBody = {
-    key3: "value3",
-    key2: "value2",
-    key1: "value1",
-  };
-
-  var response = {
-    statusCode: 200,
-    headers: {
-      my_header: "my_value",
+module.exports.getMetadata = async (event, context, callback) => {
+  let params = {
+    TableName: "serverless-defiance-dev",
+    Key: {
+      s3objectkey: `uploads/${event.pathParameters.s3objectkey}`,
     },
-    body: JSON.stringify(responseBody),
-    isBase64Encoded: false,
-  };
-  callback(null, response);
-};
-
-module.exports.hello = async (event, context, callback) => {
-  console.log("entrou");
-  return {
-    statusCode: 204,
   };
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+  function getImageFromDb() {
+    return new Promise((resolve) => {
+      dynamoDb.get(params, function (err, data) {
+        if (err) console.log(err);
+        else {
+          resolve(data.Item);
+        }
+      });
+    });
+  }
+
+  let imageAttributes = await getImageFromDb();
+
+  if (imageAttributes) {
+    let responseBody = {
+      s3objectkey: imageAttributes.s3objectkey,
+      fileLenght: imageAttributes.fileLenght,
+    };
+
+    let response = {
+      statusCode: 200,
+      body: JSON.stringify(responseBody),
+    };
+    callback(null, response);
+  } else {
+    let responseBody = {
+      message: "Image not found",
+    };
+
+    let response = {
+      statusCode: 404,
+      body: JSON.stringify(responseBody),
+    };
+    callback(null, response);
+  }
 };
