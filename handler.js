@@ -12,7 +12,6 @@ module.exports.extractMetadata = (event) => {
   const bucket = event.Records[0].s3.bucket.name;
   const key = decodeURIComponent(
     event.Records[0].s3.object.key.replace(/\+/g, " ")
-    // event.Records[0].s3.
   );
 
   const fileParams = {
@@ -48,7 +47,7 @@ module.exports.getMetadata = async (event, context, callback) => {
   let queryDbParams = {
     TableName: TableName,
     Key: {
-      s3objectkey: `${event.pathParameters.s3objectkey}`,
+      s3objectkey: `uploads/${event.pathParameters.s3objectkey}`,
     },
   };
 

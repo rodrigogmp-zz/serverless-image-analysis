@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "4aeb6ecc-5bd4-42bc-99dc-dfab9e9dbf85",
+		"name": "serverless-image-analysis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "list images",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images",
+					"protocol": "https",
+					"host": [
+						"uklpfugk73",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"images"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show image",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/nomeDaImagemSemOPrefixoUploads.extensão",
+					"protocol": "https",
+					"host": [
+						"uklpfugk73",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"images",
+						"nomeDaImagemSemOPrefixoUploads.extensão"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "download image",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/nomeDaImagemSemOPrefixoUploads.extensão/download",
+					"protocol": "https",
+					"host": [
+						"uklpfugk73",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"images",
+						"nomeDaImagemSemOPrefixoUploads.extensão",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "biggest image",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/biggest",
+					"protocol": "https",
+					"host": [
+						"uklpfugk73",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"images",
+						"biggest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "smallest image",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/smallest",
+					"protocol": "https",
+					"host": [
+						"uklpfugk73",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"images",
+						"smallest"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
