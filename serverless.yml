@@ -66,17 +66,11 @@ functions:
       - http:
           path: /images
           method: get
-  biggerImage:
-    handler: handler.biggestImage
+  infoImages:
+    handler: handler.infoImages
     events:
       - http:
-          path: /images/biggest
-          method: get
-  smallestImage:
-    handler: handler.smallestImage
-    events:
-      - http:
-          path: /images/smallest
+          path: /images/info
           method: get
   downloadImage:
     handler: handler.downloadImage

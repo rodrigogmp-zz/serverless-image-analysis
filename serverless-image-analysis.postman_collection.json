@@ -78,12 +78,12 @@
 			"response": []
 		},
 		{
-			"name": "biggest image",
+			"name": "images info",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/biggest",
+					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/info",
 					"protocol": "https",
 					"host": [
 						"uklpfugk73",
@@ -95,31 +95,7 @@
 					"path": [
 						"dev",
 						"images",
-						"biggest"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "smallest image",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://uklpfugk73.execute-api.us-east-1.amazonaws.com/dev/images/smallest",
-					"protocol": "https",
-					"host": [
-						"uklpfugk73",
-						"execute-api",
-						"us-east-1",
-						"amazonaws",
-						"com"
-					],
-					"path": [
-						"dev",
-						"images",
-						"smallest"
+						"info"
 					]
 				}
 			},
