@@ -2,20 +2,17 @@
 
 const AWS = require("aws-sdk"); // eslint-disable-line import/no-extraneous-dependencies
 
-const fs = require("fs");
-
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const s3 = new AWS.S3();
 
-const gm = require("gm").subClass({ imageMagick: true });
-
-// const { loadImage, resizeImage } = require("serverless-image-resizer");
+const TableName = "serverless-defiance-dev"
 
 module.exports.extractMetadata = (event) => {
   const bucket = event.Records[0].s3.bucket.name;
   const key = decodeURIComponent(
     event.Records[0].s3.object.key.replace(/\+/g, " ")
+    // event.Records[0].s3.
   );
 
   const fileParams = {
@@ -28,7 +25,7 @@ module.exports.extractMetadata = (event) => {
       console.log(err);
     } else {
       const object = {
-        TableName: "serverless-defiance-dev",
+        TableName: TableName,
         Item: {
           s3objectkey: key,
           fileLenght: data.ContentLength,
@@ -49,9 +46,9 @@ module.exports.extractMetadata = (event) => {
 
 module.exports.getMetadata = async (event, context, callback) => {
   let queryDbParams = {
-    TableName: "serverless-defiance-dev",
+    TableName: TableName,
     Key: {
-      s3objectkey: `uploads/${event.pathParameters.s3objectkey}`,
+      s3objectkey: `${event.pathParameters.s3objectkey}`,
     },
   };
 
@@ -87,7 +84,7 @@ function buildResponse(imageAttributes) {
 module.exports.listImages = async (event, context, callback) => {
 
   const scanningParameters = {
-    TableName: "serverless-defiance-dev",
+    TableName: TableName,
   }
 
   const data = await getAllImages(scanningParameters)
@@ -106,7 +103,7 @@ module.exports.listImages = async (event, context, callback) => {
 
 module.exports.biggestImage = async (event, context, callback) => {
   const scanningParameters = {
-    TableName: "serverless-defiance-dev",
+    TableName: TableName,
   }
 
   const data = await getAllImages(scanningParameters)
@@ -115,7 +112,6 @@ module.exports.biggestImage = async (event, context, callback) => {
   let i = 0
 
   for (i = 1; i < data.Count; i++) {
-    console.log(data.Items[i].s3objectkey, data.Items[i].fileLenght)
     if (data.Items[i].fileLenght > biggest.fileLenght) biggest = data.Items[i];
   }
 
@@ -134,7 +130,7 @@ module.exports.biggestImage = async (event, context, callback) => {
 
 module.exports.smallestImage = async (event, context, callback) => {
   const scanningParameters = {
-    TableName: "serverless-defiance-dev",
+    TableName: TableName,
   }
 
   const data = await getAllImages(scanningParameters)
@@ -173,7 +169,7 @@ function getAllImages(scanningParameters) {
 
 module.exports.downloadImage = async (event, context, callback) => {
   let queryDbParams = {
-    TableName: "serverless-defiance-dev",
+    TableName: TableName,
     Key: {
       s3objectkey: `uploads/${event.pathParameters.s3objectkey}`,
     },
@@ -189,7 +185,7 @@ module.exports.downloadImage = async (event, context, callback) => {
     };
 
     let file = await getFileFromS3(fileParams)
-
+    
     return {
       statusCode: 200,
       body: JSON.stringify(file.Body.toString("base64")),
@@ -197,7 +193,8 @@ module.exports.downloadImage = async (event, context, callback) => {
     
   } else {
     return {
-      statusCode: 204
+      statusCode: 404,
+      body: JSON.stringify({message :"File not found"})
     };
   }
 
