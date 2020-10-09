@@ -181,17 +181,26 @@ module.exports.downloadImage = async (event, context, callback) => {
 
   let imageAttributes = await getImageFromDb(queryDbParams);
 
-  console.log(imageAttributes)
-  // console.log(imageAttributes)
+  if (imageAttributes) { 
 
-  const fileParams = {
-    Bucket: "serverless-defiance",
-    Key: `uploads/${event.pathParameters.s3objectkey}`,
-  };
+    const fileParams = {
+      Bucket: "serverless-defiance",
+      Key: `uploads/${event.pathParameters.s3objectkey}`,
+    };
 
-  file = await getFileFromS3(fileParams)
+    let file = await getFileFromS3(fileParams)
 
-  if file
+    return {
+      statusCode: 200,
+      body: JSON.stringify(file.Body.toString("base64")),
+    };
+    
+  } else {
+    return {
+      statusCode: 204
+    };
+  }
+
     
 };
 
