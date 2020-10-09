@@ -1,0 +1,98 @@
+service: serverless-defiance
+
+frameworkVersion: ">=1.1.0 <=2.4.0"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  getMetadata:
+    handler: handler.getMetadata
+    description:
+    memorySize: 128
+    timeout: 30
+    events:
+      - http:
+          path: images/{s3objectkey}
+          method: get
+          cors: true
+  extractMetadata:
+    handler: handler.extractMetadata
+    description:
+    memorySize: 128
+    timeout: 30
+    events:
+      - s3:
+          bucket: serverless-defiance
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpg
+      - s3:
+          bucket: serverless-defiance
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .png
+      - s3:
+          bucket: serverless-defiance
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .gif
+      - s3:
+          bucket: serverless-defiance
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .bmp
+  listImages:
+    handler: handler.listImages
+    events:
+      - http:
+          path: /images
+          method: get
+  infoImages:
+    handler: handler.infoImages
+    events:
+      - http:
+          path: /images/info
+          method: get
+  downloadImage:
+    handler: handler.downloadImage
+    events:
+      - http:
+          path: images/{s3objectkey}/download
+          method: get
+
+resources:
+  Resources:
+    ImagesDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: s3objectkey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: s3objectkey
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+plugins:
+  - serverless-offline
